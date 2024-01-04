@@ -5,6 +5,24 @@ import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
+def url_is_youtube_playilst(url: str) -> bool:
+    return -1 != url.find('/playlist')
+
+def get_title_from_youtube_video(soup: BeautifulSoup) -> str:
+    title_end_idx = soup.get_text().rfind('-')
+    title = soup.get_text()[:title_end_idx]
+    return title
+
+def get_title_from_youtube_playlist(soup: BeautifulSoup) -> str:
+    title_tag = soup.contents[1].find('title')
+    title = ''
+    if not title_tag:
+        title = "<Oops, I couldn't get the title>"
+    else:
+        title_end_idx = soup.get_text().rfind('-')
+        title = title_tag.get_text()[:title_end_idx]
+    return title
+
 @irc3.plugin
 class YtPlugin:
     YT_URL_REGEX = "((?:https?:)?\\/\\/)?((?:www|m)\\.)?((?:youtube(-nocookie)?\\.com|youtu.be))(\\/(?:[\\w\\-]+\\?v=|embed\\/|live\\/|v\\/)?)([\\w\\-]+)(\\S+)?"
@@ -40,12 +58,15 @@ class YtPlugin:
             if not read_least_one_elem:
                 self.bot.privmsg(target, f"Found YouTube links:")
                 read_least_one_elem = True
-            url = data[match.start():match.end()]
+            url = data[match.start() : match.end()]
             if not url.startswith("http"):
                 url = f"http://{url}"
             page = urlopen(url)
             html = page.read().decode("utf-8")
             soup = BeautifulSoup(html, "html.parser")
-            title_end_idx = soup.get_text().rfind('-')
-            title = soup.get_text()[:title_end_idx]
+            title = ''
+            if url_is_youtube_playilst(url):
+                title = get_title_from_youtube_playlist(soup)
+            else:
+                title = get_title_from_youtube_video(soup)
             self.bot.privmsg(target, f"\t - Link 1: {title} ==> {url}")
