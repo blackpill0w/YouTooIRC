@@ -1,0 +1,2 @@
+irc3==1.1.10 
+BeautifulSoup4==4.12.2
