@@ -21,3 +21,6 @@ When you're done, run the following command to deactivate the environment:
 ```bash
 deactivate
 ```
+
+Always remember:
+![](./virgin_api_vs_chad_scraper.jpeg)
