@@ -22,5 +22,5 @@ When you're done, run the following command to deactivate the environment:
 deactivate
 ```
 
-Always remember:
+Always remember:<br>
 ![](./virgin_api_vs_chad_scraper.jpeg)
